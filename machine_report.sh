@@ -7,7 +7,7 @@ MIN_NAME_LEN=5
 MAX_NAME_LEN=13
 
 MIN_DATA_LEN=20
-MAX_DATA_LEN=32
+MAX_DATA_LEN=40
 
 BORDERS_AND_PADDING=7
 
@@ -143,8 +143,8 @@ PRINT_DATA() {
 
     # Truncate or pad data
     local data_len=${#data}
-    if (( data_len >= MAX_DATA_LEN || data_len == MAX_DATA_LEN-1 )); then
-        data=$(echo "$data" | cut -c 1-$((MAX_DATA_LEN-3-2)))...
+    if (( data_len > MAX_DATA_LEN )); then
+        data=$(echo "$data" | cut -c 1-$((MAX_DATA_LEN-3)))...
     else
         data=$(printf "%-${max_data_len}s" "$data")
     fi
