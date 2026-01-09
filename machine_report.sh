@@ -12,7 +12,7 @@ MAX_DATA_LEN=40
 BORDERS_AND_PADDING=7
 
 # Basic configuration, change as needed
-report_title="UNITED STATES GRAPHICS COMPANY"
+report_title="NEW ROBOT ORDER"
 last_login_ip_present=0
 zfs_present=0
 zfs_filesystem="zroot/ROOT/os"
@@ -299,20 +299,25 @@ else
 fi
 
 # Last login and Uptime
-last_login=$(lastlog -u "$USER")
-last_login_ip=$(echo "$last_login" | awk 'NR==2 {print $3}')
+#last_login=$(lastlog -u "$USER")
+ooffset=$(($(id -u) * 292 ))
+last_login_time=$(od -An -N4 -j$ooffset -t u4 /var/log/lastlog | xargs -I{} date --date='@{}')
+#last_login_ip=$( dd if=/var/log/lastlog skip=$(($ooffset + 36)) bs=1 count=16 2>/dev/null)
+last_login_ip=$( dd if=/var/log/lastlog skip=$(($ooffset + 36)) bs=1 count=16 2>/dev/null| xargs 2>/dev/null)
+last_login_ip_present=1
+#last_login_ip=$(echo "$last_login" | awk 'NR==2 {print $3}')
 
 # Check if last_login_ip is an IP address
-if [[ "$last_login_ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    last_login_ip_present=1
-    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $6, $7, $10, $8}')
-else
-    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $4, $5, $8, $6}')
-    # Check for **Never logged in** edge case
-    if [ "$last_login_time" = "in**" ]; then
-        last_login_time="Never logged in"
-    fi
-fi
+#if [[ "$last_login_ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#    last_login_ip_present=1
+#    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $6, $7, $10, $8}')
+#else
+#    last_login_time=$(echo "$last_login" | awk 'NR==2 {print $4, $5, $8, $6}')
+#    # Check for **Never logged in** edge case
+#    if [ "$last_login_time" = "in**" ]; then
+#        last_login_time="Never logged in"
+#    fi
+#fi
 
 sys_uptime=$(uptime -p | sed 's/up\s*//; s/\s*day\(s*\)/d/; s/\s*hour\(s*\)/h/; s/\s*minute\(s*\)/m/')
 
